@@ -104,6 +104,33 @@ module Firebase
           get_user_by(uid: uid)
         end
 
+        # Updates an existing user account with the specified properties.
+        #
+        # @param [String] uid The ID of the user to update.
+        # @param [Hash] params The user fields to update. Supported keys: :email, :display_name, :phone_number, :photo_url, :password, :email_verified, :disabled.
+        #
+        # @raise [UpdateUserError] if the user cannot be updated.
+        #
+        # @return [UserRecord]
+        def update_user(uid, params = {})
+          payload = {
+            localId: validate_uid(uid, required: true),
+            email: validate_email(params[:email]),
+            displayName: validate_display_name(params[:display_name]),
+            phoneNumber: validate_phone_number(params[:phone_number]),
+            photoUrl: validate_photo_url(params[:photo_url]),
+            password: validate_password(params[:password]),
+            emailVerified: to_boolean(params[:email_verified]),
+            disabled: to_boolean(params[:disabled])
+          }.compact
+
+          res = @client.post(with_path("accounts:update"), payload).body
+
+          raise UpdateUserError, "failed to update user #{res}" if res&.fetch("localId", nil).nil?
+
+          get_user_by(uid: uid)
+        end
+
         private
 
         def with_path(path)
