@@ -117,6 +117,18 @@ module Firebase
           @user_manager.set_custom_user_claims(uid, custom_claims)
         end
 
+        # Updates a user account with the specified properties.
+        #
+        # @param [String] uid The id of the user to update.
+        # @param [Hash] params The fields to update (e.g., email, display_name, etc).
+        #
+        # @raise [UpdateUserError] if the user cannot be updated.
+        #
+        # @return [UserRecord]
+        def update_user(uid, params = {})
+          @user_manager.update_user(uid, params)
+        end
+
         private
 
         # Checks if an ID token has been revoked.
